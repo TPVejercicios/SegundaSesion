@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include <fstream>
 #include <algorithm>
 #include "Date.h"
@@ -27,6 +28,7 @@ struct ListaAlquileres {
 	Alquiler* elementos;
 	int tamaño, contador;
 };
+
 
 void MostrarCoches(ListaCoches& listaCoches) {
 	for (int i = 0; i < listaCoches.contador; i++) {
