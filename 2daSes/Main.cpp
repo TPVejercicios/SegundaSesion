@@ -42,9 +42,38 @@ void MostrarAlquileres(ListaAlquileres& listaAlquileres) {
 	}
 }
 
+int *BuscarCoche(int codigo, ListaCoches& listaCoches) {
+	bool encontrado = false;
+	int *p = nullptr;
+	int i = -1;
+	while ((!encontrado) && (i < listaCoches.contador)) {
+		i++;
+		if (codigo == listaCoches.elementos[i].codigo) encontrado = true;
+	}
+	if (encontrado) {
+		//p = listaCoches.elementos[i];
+		cout << "Si que lo encuentra" << endl;
+	}
+	else cout << "No encuentra" << endl;
+
+	return p;
+}
+
+void MostrarAlquileres2(ListaCoches& listaCoches, ListaAlquileres& listaAlquileres) {
+	int *p;
+	for (int i = 0; i < listaAlquileres.contador; i++) {
+		BuscarCoche(listaAlquileres.elementos[i].codigo, listaCoches);
+		cout << listaAlquileres.elementos[i].fecha << " ";
+		/*if (p != nullptr){
+			cout << listaCoches.elementos[p].marca << " " << listaCoches.elementos[p].modelo << " " << listaAlquileres.elementos[i].dias << " dia(s) por " << listaAlquileres.elementos[i].dias * listaCoches.elementos[p].precio << endl;
+			}*/
+		//else
+		cout << "ERROR: Modelo inexistente" << endl;
+		}
+}
+
 void OrdenarPorFecha(ListaAlquileres& listaAlquileres) {
 	sort(listaAlquileres.elementos, &(listaAlquileres.elementos[listaAlquileres.contador]));
-	MostrarAlquileres(listaAlquileres);
 }
 
 bool LecturaCoches(ListaCoches& listaCoches) {
@@ -79,6 +108,21 @@ bool LecturaAlquileres(ListaAlquileres& listaAlquileres) {
 	return leido;
 }
 
+int Menu() {
+	int op;
+	cout << "1. Mostrar Alquileres" << endl;
+	cout << "2. Buscar Coche" << endl;
+	cout << "0. Salir" << endl;
+	cout << "Elige una opcion: ";
+	cin >> op;
+	while ((op < 0) || (op > 2)) {
+		cout << "Opcion no valida. Elige una opcion: ";
+		cin >> op;
+	}
+	return op;
+
+}
+
 int main()
 {
 	ListaAlquileres listaAlquileres;
@@ -89,7 +133,20 @@ int main()
 	if (LecturaAlquileres(listaAlquileres)) MostrarAlquileres(listaAlquileres);
 	else cout << "error de lectura alquileres";
 	cout << endl << endl;
-	OrdenarPorFecha(listaAlquileres);
+	int op;
+	do {
+		op = Menu();
+		switch (op) {
+		case 1: 
+			OrdenarPorFecha(listaAlquileres);
+			MostrarAlquileres2(listaCoches, listaAlquileres);
+			break;
+		case 2:
+			//BuscarCoche();
+			//Mostrar Ese Coche
+			break;
+		}
 
+	} while (op != 0);
 	system("pause");
 }

@@ -1,4 +1,5 @@
 ﻿  Main.cpp
 g:\2do\tpv1\ejercicios\hoja03(2da)\1eraentrega\segundasesion\2dases\main.cpp(12): warning C4091: 'typedef ': se ha omitido a la izquierda de 'Coche' cuando no hay ninguna variable declarada
 g:\2do\tpv1\ejercicios\hoja03(2da)\1eraentrega\segundasesion\2dases\main.cpp(20): warning C4091: 'typedef ': se ha omitido a la izquierda de 'Alquiler' cuando no hay ninguna variable declarada
+g:\2do\tpv1\ejercicios\hoja03(2da)\1eraentrega\segundasesion\2dases\main.cpp(63): warning C4101: 'p': variable local sin referencia
   2daSes.vcxproj -> G:\2do\TPV1\Ejercicios\Hoja03(2da)\1eraEntrega\SegundaSesion\x64\Debug\2daSes.exe
