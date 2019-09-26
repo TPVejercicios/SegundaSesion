@@ -26,5 +26,8 @@
     <ClInclude Include="Date.h">
       <Filter>Archivos de origen</Filter>
     </ClInclude>
+    <ClInclude Include="C:\Users\demon\Desktop\checkML.h">
+      <Filter>Archivos de encabezado</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

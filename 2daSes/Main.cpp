@@ -20,7 +20,7 @@ typedef struct Alquiler {
 };
 
 struct ListaCoches {
-	Coche* elementos;
+	Coche** elementos;
 	int tamaño, contador;
 };
 
@@ -29,53 +29,73 @@ struct ListaAlquileres {
 	int tamaño, contador;
 };
 
+//Libera la memoria
+void liberar(ListaCoches listaCoches, ListaAlquileres listaAlquileres)
+{
+	for (int i = 0; i < listaCoches.contador; i++)
+	{
+		delete listaCoches.elementos[i];
+	}
 
+	delete[] listaAlquileres.elementos;
+	delete[] listaCoches.elementos;
+}
+
+//Muestra en consola la lista de coches
 void MostrarCoches(ListaCoches& listaCoches) {
 	for (int i = 0; i < listaCoches.contador; i++) {
-		cout << listaCoches.elementos[i].codigo << " " << listaCoches.elementos[i].precio << " " << listaCoches.elementos[i].marca << " " << listaCoches.elementos[i].modelo << endl;
+		cout << listaCoches.elementos[i]->codigo << " " << listaCoches.elementos[i]->precio << " " << listaCoches.elementos[i]->marca << " " << listaCoches.elementos[i]->modelo << endl;
 	}
 }
 
+//Muestra en consola la lista de alquileres
 void MostrarAlquileres(ListaAlquileres& listaAlquileres) {
 	for (int i = 0; i < listaAlquileres.contador; i++) {
 		cout << listaAlquileres.elementos[i].codigo << " " << listaAlquileres.elementos[i].fecha << " " << listaAlquileres.elementos[i].dias << endl;
 	}
 }
 
-int *BuscarCoche(int codigo, ListaCoches& listaCoches) {
+//Comprueba si un codigo pertenece a un coche existente
+Coche *BuscarCoche(int codigo,const ListaCoches& listaCoches) {
+
 	bool encontrado = false;
-	int *p = nullptr;
-	int i = -1;
+	Coche *p = nullptr;
+	int i = 0;
 	while ((!encontrado) && (i < listaCoches.contador)) {
+		encontrado = (codigo == listaCoches.elementos[i]->codigo);
 		i++;
-		if (codigo == listaCoches.elementos[i].codigo) encontrado = true;
 	}
+	i--;
 	if (encontrado) {
-		//p = listaCoches.elementos[i];
-		cout << "Si que lo encuentra" << endl;
+		p = listaCoches.elementos[i];
+		cout << "Coche encontrado. " << endl;
 	}
-	else cout << "No encuentra" << endl;
+	else {
+		cout << "No se ha encontrado. " << endl;
+	}
 
 	return p;
 }
 
-void MostrarAlquileres2(ListaCoches& listaCoches, ListaAlquileres& listaAlquileres) {
-	int *p;
+//Organiza y muestra en consola los alquileres de coches
+void GestionarAlquileres(const ListaCoches& listaCoches,const ListaAlquileres& listaAlquileres) {
+	Coche *p;
 	for (int i = 0; i < listaAlquileres.contador; i++) {
-		BuscarCoche(listaAlquileres.elementos[i].codigo, listaCoches);
+		p = BuscarCoche(listaAlquileres.elementos[i].codigo, listaCoches);
 		cout << listaAlquileres.elementos[i].fecha << " ";
-		/*if (p != nullptr){
-			cout << listaCoches.elementos[p].marca << " " << listaCoches.elementos[p].modelo << " " << listaAlquileres.elementos[i].dias << " dia(s) por " << listaAlquileres.elementos[i].dias * listaCoches.elementos[p].precio << endl;
-			}*/
-		//else
-		cout << "ERROR: Modelo inexistente" << endl;
+		if (p != nullptr){
+			cout << p->marca << " " << p->marca << " " << p->modelo << " " << listaAlquileres.elementos[i].dias << " dia(s) por " << listaAlquileres.elementos[i].dias * p->precio <<" euros." << endl;
+			}
+		else cout << "ERROR: Modelo inexistente" << endl;
 		}
 }
 
+//Ordena por las fechas de alquiler de menos a mayor
 void OrdenarPorFecha(ListaAlquileres& listaAlquileres) {
 	sort(listaAlquileres.elementos, &(listaAlquileres.elementos[listaAlquileres.contador]));
 }
 
+//Lee los coches de un fichero y los almacena en un array dinámico
 bool LecturaCoches(ListaCoches& listaCoches) {
 	ifstream lectura;
 	lectura.open("coches.txt");
@@ -83,15 +103,17 @@ bool LecturaCoches(ListaCoches& listaCoches) {
 	if (leido) {
 		lectura >> listaCoches.contador;
 		listaCoches.tamaño = listaCoches.contador + 10;
-		listaCoches.elementos = new Coche[listaCoches.tamaño];
+		listaCoches.elementos = new Coche*[listaCoches.tamaño];
 		for (int i = 0; i < listaCoches.contador; i++) {
-			lectura >> listaCoches.elementos[i].codigo >> listaCoches.elementos[i].precio >> listaCoches.elementos[i].marca >> listaCoches.elementos[i].modelo;
+			listaCoches.elementos[i] = new Coche;
+			lectura >> listaCoches.elementos[i]->codigo >> listaCoches.elementos[i]->precio >> listaCoches.elementos[i]->marca >> listaCoches.elementos[i]->modelo;
 		}
 	}
 	lectura.close();
 	return leido;
 }
 
+//Lee los alquileres de un fichero y los almacena en un array dinámico
 bool LecturaAlquileres(ListaAlquileres& listaAlquileres) {
 	ifstream lectura;
 	lectura.open("rent.txt");
@@ -108,6 +130,7 @@ bool LecturaAlquileres(ListaAlquileres& listaAlquileres) {
 	return leido;
 }
 
+//Gestiona la entrada de teclado
 int Menu() {
 	int op;
 	cout << "1. Mostrar Alquileres" << endl;
@@ -125,28 +148,40 @@ int Menu() {
 
 int main()
 {
+	_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	ListaAlquileres listaAlquileres;
 	ListaCoches listaCoches;
-	if (LecturaCoches(listaCoches)) MostrarCoches(listaCoches);
-	else cout << "error de lectura coches";
-	cout << endl << endl;
-	if (LecturaAlquileres(listaAlquileres)) MostrarAlquileres(listaAlquileres);
-	else cout << "error de lectura alquileres";
-	cout << endl << endl;
-	int op;
+	if (LecturaCoches(listaCoches)) cout << "Los coches se han leido correctamente. " << endl;
+	else cout << "error de lectura coches" << endl;
+	if (LecturaAlquileres(listaAlquileres)) cout << "Los alquileres se han leido correctamente. " << endl;
+	else cout << "error de lectura alquileres" << endl;
+	cout << "*****************************************" << endl;
+	int input;
+	string mensaje;
 	do {
-		op = Menu();
-		switch (op) {
+		cout << mensaje << endl;
+		input = Menu();
+		system("cls");
+		switch (input) {
 		case 1: 
 			OrdenarPorFecha(listaAlquileres);
-			MostrarAlquileres2(listaCoches, listaAlquileres);
+			GestionarAlquileres(listaCoches, listaAlquileres);
 			break;
 		case 2:
-			//BuscarCoche();
-			//Mostrar Ese Coche
+			int codigo;
+			cout << "Ingrese el codigo del coche. " << endl;
+			cin >> codigo;
+			Coche *p = BuscarCoche(codigo, listaCoches);
+			if (p != nullptr){
+				cout << "El coche encontrado es: " << p->marca << " " << p->modelo << endl;
+			}
+			else{
+				cout << "No existe un coche con el codigo: " << codigo << " en rent.txt" << endl;
+			}
 			break;
 		}
 
-	} while (op != 0);
-	system("pause");
+	} while (input != 0);
+
+	liberar(listaCoches,listaAlquileres);
 }
